@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8
+<meta http-equiv="
+	x-ua-compatible" content="ie=edge"">
+<title>demo20</title>
+</head>
+<body>
+	<div th:replace="/fragments/header :: header" />
+	<p align="center" class="solid">List of Expiring Certificates</p>
+	<p align="center"><a th:href="@{/home}">Home</a></p>
+	<div th:switch="${certificates}" class="container my-5">
+		<div class="row">
+			<div class="col-md-6">
+				<h2 th:case="null">No Certificates yet!</h2>
+				<div th:case="*">
+					<table class="table table-striped table-responsive-md" border="1">
+						<thead>
+							<tr>
+								<th>Function</th>
+								<th>Host Name</th>
+								<th>Application Name</th>
+								<th>Alias</th>
+								<th>Valid From</th>
+								<th>Valid To</th>
+								<th>Edit</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="certificate : ${certificates}">
+								<td th:text="${certificate.function}">Function</td>
+								<td th:text="${certificate.hostName}">Host Name</td>
+								<td th:text="${certificate.applicationName}">Application
+									Name</td>
+								<td th:txt="${certificate.alias}">Alias</td>
+								<td th:text="${certificate.validFrom}">Valid From</td>
+								<td th:text="${certificate.expiryDate}">Valid To</td>
+								<td><a th:href="@{/edit/{id}(id=${certificate.id})}"
+									class="btn btn-primary"><i>Edit</i></a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:replace="/fragments/footer :: footer" />
+</body>
+</html>

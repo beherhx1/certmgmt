@@ -1,0 +1,103 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html"; charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Edit Certificate</title>
+</head>
+<body>
+	<div align="center" class="col-md-12">
+		<div class="col-md-6">
+		<h1>Update Existing Certificate</h1>
+		<form action="#" th:action="@{/edit/{id}(id=${certificate.id})}" th:object="${certificate}"
+			method="POST">
+			<div class="form-group">
+				<label for="function">Function</label>
+				<input type="text" th:field="*{function}" />
+				<ul>
+					<li th:each="err : ${#fields.errors('function')}" th:text="${err}"
+							class="error" />
+				</ul>
+			</div>
+
+			<div class="form-group">
+				<label for="hostName">Host Name</label>
+				<input type="text" th:field="*{hostName}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('hostName')}" th:errors="*{hostName}">
+			</div>
+
+			<div class="form-group">
+				<label for="applicationName">Application Name</label>
+				<input type="text" th:field="*{applicationName}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('applicationName')}" th:errors="*{applicationName}">
+			</div>
+
+			<div class="form-group">
+				<label for="alias">Alias</label>
+				<input type="text" th:field="*{alias}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('alias')}" th:errors="*{alias}">
+			</div>
+
+			<div class="form-group">
+				<label for="validFrom">Valid From</label>
+				<input type="date" th:field="*{validFrom}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('validFrom')}" th:errors="*{validFrom}">
+			</div>
+			
+			<div class="form-group">
+				<label for="expiryDate">Expiring On</label>
+				<input type="date" th:field="*{expiryDate}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('expiryDate')}" th:errors="*{expiryDate}">
+			</div>
+
+			<div class="form-group">
+				<label for="keyStoreLocation">KeyStore Location</label>
+				<input type="text" th:field="*{keyStoreLocation}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('keyStoreLocation')}" th:errors="*{keyStoreLocation}">
+			</div>
+
+			<div class="form-group">
+				<label for="keyStoreType">KeyStore Type</label>
+				<input type="text" th:field="*{keyStoreType}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('keyStoreType')}" th:errors="*{keyStoreType}">
+			</div>
+
+			<div class="form-group">
+				<label for="sme">SME</label>
+				<input type="text" th:field="*{sme}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('sme')}" th:errors="*{sme}">
+			</div>
+
+			<div class="form-group">
+				<label for="sme">Creation Tool</label>
+				<input type="text" th:field="*{creationTool}" />
+				<p class="alert alert-danger" th:if="${#fields.hasErrors('creationTool')}" th:errors="*{creationTool}">
+			</div>
+			<div th:if="${#fields.hasErrors('global')}">
+					<h3>Global errors:</h3>
+					<p th:each="err : ${#fields.errors('global')}" th:text="${err}"
+						class="error" />
+				</div>
+				<h3>All errors in place:</h3>
+				<div th:if="${#fields.hasAnyErrors()}">
+					<ul>
+						<li th:each="err : ${#fields.allErrors()}" th:text="${err}" />
+					</ul>
+				</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Submit</button> 
+			</div>
+		</form>
+			<h3>This is outside the form:</h3>
+			<h4>Errors on a single field:</h4>
+			<div th:if="${#fields.hasErrors('${certificate.alias}')}"
+				th:errors="*{certificate.alias}"></div>
+			<h4>All errors:</h4>
+			<ul>
+				<li th:each="err : ${#fields.errors('certificate.*')}" th:text="${err}" />
+			</ul>		
+		</div>
+	</div>
+
+</body>
+</html>

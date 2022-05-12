@@ -1,0 +1,25 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html" ; charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Cert Added</title>
+</head>
+<body>
+	<div class="col-md-12" align="center">
+		<h1>Certificate was added to the Certificate Tracking List</h1>
+		<div class="alert alert-success col-mid-8" role="alert">
+			<p th:text="'function: ' + ${certificate.function}" />
+			<p th:text="'applicationName: ' + ${certificate.applicationName}" />
+		</div>
+	</div>
+	<div>
+		<a href="/newcert">Add another Certificate</a>
+	</div>
+	<div>
+		<a href="/certlist">Expiring Certificate List</a>
+	</div>
+
+</body>
+</html>

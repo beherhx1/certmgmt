@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>File Upload</title>
+</head>
+<body>
+	<div align="center" class="col-md-12">
+		<div class="col-md-6">
+	<h1>Upload a File</h2>
+		<form method="POST" enctype="multipart/form-data" th:action="@{/fileupload}" th:object="${certificate}">
+			<table>
+				<tr>
+					<td>File to upload:</td><td><input type="file" name="file" /></td>
+				</tr>
+				<tr>
+					<td><input type="submit" class="btn btn-primary"  value="upload" />Upload</td>
+				</tr>
+			</table>		
+		</form>
+	</div>
+</div>
+</body>
+</html>

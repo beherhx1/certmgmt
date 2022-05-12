@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html" ; charset="UTF-8">
+<title>demo20 home</title>
+<div th:replace="/fragments/header :: header-css" />
+</head>
+<body>
+	<div th:replace="/fragments/header :: header" />
+		<p align="center" class="solid">Welcome</p>
+
+	<div class="container">
+		<div align="center">
+			<!--  Display all Expiring Certificates for next 60 days -->
+			<ul class="nav navbar-nav">
+				<li class="active"><a th:href="@{/certlist}">Current
+						Expiring Certificates</a></li>
+			</ul>
+		</div>
+		<div align="center">
+			<!-- Add New Record -->
+			<ul class="nav navbar-nav">
+				<li class="active"><a th:href="@{/newcert}">Add New
+						Certificate</a></li>
+			</ul>
+		</div>
+		<div align="center">
+			<!-- Bulk Upload of Certificates -->
+			<ul class="nav navbar-nav">
+				<li class="active"><a th:href="@{/fileupload}">Bulk Upload
+						of Certificates</a></li>
+			</ul>
+		</div>
+		<div align="center">
+			<!--  Exit -->
+			<form action="#" method="POST">
+				<ul class="nav navbar-nav">
+					<li class="active"><a th:href="@{/logout}">Logout
+							</button></li>
+				</ul>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
