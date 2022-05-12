@@ -1,0 +1,162 @@
+package com.example.demo20.controller;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.example.demo20.Certificate;
+import com.example.demo20.ResponseMessage;
+import com.example.demo20.SourceType;
+import com.example.demo20.service.CertificateService;
+import com.example.demo20.service.CertificateValidationService;
+import com.example.demo20.service.FileStorageService;
+
+@Controller
+@Validated
+public class Demo20Controller {
+	private static final Logger logger = LoggerFactory.getLogger(Demo20Controller.class);
+	@Autowired
+	private CertificateService certificateService;
+
+	@Autowired
+	private CertificateValidationService certificateValidationService;
+
+	@Autowired
+	private FileStorageService fileStorageService;
+
+	private List<Certificate> certificates = new ArrayList<Certificate>();
+
+	@GetMapping({ "/", "/home" })
+	public String home() {
+		return "home.html";
+	}
+
+	@GetMapping("/newcert")
+	public String newcert(Model model) {
+		model.addAttribute("certificate", new Certificate());
+		return "newcert";
+	}
+
+	@GetMapping("/certlist")
+	public String certlist2(Model model) {
+		if (certificateService.getAllCertificates().size() == 0 ) {
+			logger.debug("Empty List ");
+			model.addAttribute("certificate", new Certificate());
+			return "newcert";
+		} else {
+			model.addAttribute("certificates", certificateService.getAllCertificates());
+			return "certlist";
+		}
+	}
+
+	@PostMapping("/newcert")
+	public String saveCert(Model model, @ModelAttribute("certificate") Certificate certificate, BindingResult result) {
+		String alias = certificate.getAlias();
+		LocalDate expiryDate = certificate.getExpiryDate();
+		String err = certificateValidationService.validate(certificate);
+		if (!err.isEmpty()) {
+			ObjectError error = new ObjectError("globalError", err);
+			result.addError(error);
+		}
+		if (result.hasErrors()) {
+			return "/newcert";
+		}
+		if (!alias.isEmpty() && null != alias && null != expiryDate) {
+			certificateService.save(certificate.getFunction(), certificate.getHostName(),
+					certificate.getApplicationName(), certificate.getValidFrom(), certificate.getExpiryDate(),
+					certificate.getAlias());
+			model.addAttribute(certificate);
+			return "result.html";
+		}
+		return "redirect:newcert.html";
+	}
+
+	@GetMapping("/edit/{id}")
+	public String editcert(@PathVariable("id") long id, Model model) {
+		// User user = userRepository.findById(id)
+		// .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+		Optional<Certificate> cert = certificateService.getCertificate(id);
+		if (!cert.isPresent()) {
+			logger.error("Error: Cert not found in repository");
+			return "redirect:edit";
+		} else {
+			model.addAttribute("certificate", cert.get());
+			logger.debug("Certificate Is Retrieved");
+			return "edit";
+		}
+
+	}
+
+	@PostMapping("/edit/{id}")
+	public String editcert(@PathVariable("id") long id, @Valid Certificate certificate, BindingResult result) {
+
+		if (result.hasErrors()) {
+
+			certificate.setId(id);
+			return "edit";
+		}
+		try {
+			// @TODO make the save generic so as to update all values except the key ones
+			// e.g. application, function, alias etc.
+			certificateService.updateCertificateExpiryDate(certificate.getAlias(), certificate.getFunction(),
+					certificate.getValidFrom(), certificate.getExpiryDate());
+			logger.debug("Certificate Update Successful");
+		} catch (Exception e) {
+			logger.error("Unable to update Certificate");
+		}
+		return "certlist";
+
+	}
+	
+	@GetMapping("/fileupload")
+	public String upload() {
+		return "fileupload";
+	}
+
+	@PostMapping("/fileupload")
+	public String fileUpload(@RequestParam("file") MultipartFile file, Model model) {
+		String message = "";
+		try {
+			fileStorageService.save(file);
+			message = "Uploaded the file successfully: " + file.getOriginalFilename();
+			certificateService.bulk_saveFromExternalSource(SourceType.EXCEL, file);
+			model.addAttribute("certificates", certificateService.getAllCertificates());
+			return "certlist";
+		} catch (Exception e) {
+		
+			message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+			e.printStackTrace();
+			//return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+			return "home";
+		}
+	}
+	
+	@GetMapping("/logout")
+	public String close(HttpServletRequest request, ModelMap model, HttpSession session) {
+		return "logout";
+	}
+}
